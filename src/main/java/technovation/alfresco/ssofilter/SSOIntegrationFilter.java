@@ -1,9 +1,18 @@
 package technovation.alfresco.ssofilter;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -20,6 +29,14 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
+
+import technovation.alfresco.httpclient.GenericHTTPClient;
+import technovation.alfresco.httpclient.GenericHTTPParam;
+import technovation.alfresco.httpclient.GenericHttpResp;
 
 public class SSOIntegrationFilter implements Filter {
 
@@ -27,7 +44,7 @@ public class SSOIntegrationFilter implements Filter {
 	public static final String SESS_PARAM_REMOTE_USER = SSOIntegrationFilter.class.getName() + '.' + PARAM_REMOTE_USER;
 
 	private ServletContext servletContext;
-	private static Log logger = LogFactory.getLog(SSOIntegrationFilter.class);
+	private static Logger logger = Logger.getLogger(SSOIntegrationFilter.class);
 
 	//@Override
 	public void destroy() {
@@ -36,6 +53,7 @@ public class SSOIntegrationFilter implements Filter {
 	
 	//@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
+		BasicConfigurator.configure();
 		 this.servletContext = filterConfig.getServletContext();
 
 	}
@@ -88,8 +106,6 @@ public class SSOIntegrationFilter implements Filter {
                         //System.out.println(hn+" : " + httpServletRequest.getHeader(hn));
                 }
         }
-        //logger.info(" \n\n\n\t\t 1.::: ....remoteUser-->"+remoteUser+"..in doFilter().....\n\n\n");
-        // We've successfully authenticated the user. Remember their ID for next time. 
         if (remoteUser != null && !remoteUser.isEmpty()) { 
             HttpSession session = httpServletRequest.getSession(); 
             session.setAttribute(SESS_PARAM_REMOTE_USER, remoteUser); 
@@ -117,7 +133,40 @@ public class SSOIntegrationFilter implements Filter {
 	}
 
 	private String proprieterayUserIdValidationAndExtractionMethod(HttpServletRequest req, HttpServletResponse resp, String remoteUser) {
-		return remoteUser;
+		
+		GenericHTTPClient httpclient = null;
+		try {
+			httpclient = new GenericHTTPClient("http");
+			
+			GenericHTTPParam params = new GenericHTTPParam();
+			Map<String,String> headers = new HashMap<String,String>();
+			String auth = "admin" + ":" + "";
+			String basicauthhh = "dGltb213YUBnbWFpbC5jb206QWRtaW4xMjMjQCE=";
+			headers.put("Authorization","Basic "+basicauthhh);//dGltb213YUBnbWFpbC5jb206QWRtaW4xMjMjQCE=");
+			params.setHeaderParams(headers);
+			params.setHttpmethod("GET");
+			params.setUrl("http://localhost:8080/eacimscore/seam/resource/restv1/sso/"+remoteUser);
+			
+			
+			GenericHttpResp response = httpclient.call(params);
+			
+			System.out.println("\n\n encodedAuth = ["+basicauthhh+"]  RESP CODE:: "+response.getResp_code()
+			         +"\n\t\t RESP BODY:: "+response.getBody());
+			
+			if(response.getResp_code()==200)
+				return response.getBody();
+			return null;
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+		}finally{
+			try{
+				if(httpclient!=null)
+					httpclient.finalizeMe();
+			}catch(Exception e){}
+		}
+		
+		
+		return null;
 	}
 
 	
