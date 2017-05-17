@@ -63,81 +63,43 @@ public class SSOIntegrationFilter implements Filter {
 		HttpServletRequest httpServletRequest = (HttpServletRequest) req; 
 		HttpServletResponse httpServletResponse = (HttpServletResponse) res; 
 		
-		 String url = httpServletRequest.getRequestURL().toString();
-		 String queryString = httpServletRequest.getQueryString();
-		 //System.out.println(" \n\n\n\n\t  url-->"+url+"\n\t   queryString-->"+queryString+"\n\n");
-		 
-        String remoteUser = proprieterayUserIdValidationAndExtractionMethod(httpServletRequest, httpServletResponse, req.getParameter(PARAM_REMOTE_USER)); 
-       // if(remoteUser!=null && !remoteUser.isEmpty())
-       // 	System.out.println(" \n\n\n\n\t  remoteUser-->"+remoteUser+"\n\n");
-        if(remoteUser==null || remoteUser.isEmpty()){
-        	//remoteUser = httpServletRequest.getHeader("X-Alfresco-Remote-User");
-        	Cookie[] cookies = httpServletRequest.getCookies();
-
-        	if (cookies != null) {
-        	 for (Cookie cookie : cookies) {
-        		 //System.out.println("----> cookie.getName(): "+cookie.getName() );
-        	   if (cookie.getName().equalsIgnoreCase("X-Alfresco-Remote-User")) {
-        		   remoteUser = cookie.getValue();
-        		   //httpServletResponse.setHeader("x-alfresco-remote-user", remoteUser);
-        		   //servletContext.setAttribute("x-alfresco-remote-user", remoteUser);
-        		   break;
-        	    }
-        	  }
-        	}
-        }
+		String remoteUser = proprieterayUserIdValidationAndExtractionMethod(httpServletRequest, httpServletResponse, req.getParameter(PARAM_REMOTE_USER)); 
         
-        if(remoteUser==null || remoteUser.isEmpty()){
-        	HttpSession session = httpServletRequest.getSession(); 
-        	Object remuser = session.getAttribute(SESS_PARAM_REMOTE_USER);
-        	remoteUser = remuser!=null ? (String) remuser : null; 
-        }
-        
-        StringBuffer requestURL = httpServletRequest.getRequestURL();
-        if (httpServletRequest.getQueryString() != null) {
-            requestURL.append("?").append(httpServletRequest.getQueryString());
-        }
-        String completeURL = requestURL.toString();
-        Enumeration<String> headerNames = httpServletRequest.getHeaderNames();
-
-        if (headerNames != null) {
-                while (headerNames.hasMoreElements()) {
-                	String hn = headerNames.nextElement();
-                        //System.out.println(hn+" : " + httpServletRequest.getHeader(hn));
-                }
-        }
         if (remoteUser != null && !remoteUser.isEmpty()) { 
             HttpSession session = httpServletRequest.getSession(); 
             session.setAttribute(SESS_PARAM_REMOTE_USER, remoteUser); 
+        }
+        String pathInfo = httpServletRequest.getPathInfo();
+        if(pathInfo!=null && !pathInfo.isEmpty() && pathInfo.contains("logout")){
+        	
+        	System.out.println("^^ pathInfo ["+pathInfo+"]");
+            HttpSession session = httpServletRequest.getSession(); 
+            session.removeAttribute(SESS_PARAM_REMOTE_USER);
+            session.setAttribute(SESS_PARAM_REMOTE_USER, null); 
+            session.setMaxInactiveInterval(1);
+            session.invalidate();
+            return;
+            
+            
         }
         
         
        HeaderMapRequestWrapper wrapper = new HeaderMapRequestWrapper(httpServletRequest);
         
-		//wrapper.addHeader("x-alfresco-remote-user", "timothy");
-        chain.doFilter(wrapper, res); 
+	   chain.doFilter(wrapper, res); 
         
-        
-        StringBuilder sb = new StringBuilder();
-		sb.append( "\n\n\n");
-		Enumeration<String> headernames = wrapper.getHeaderNames();
-		boolean hasspringsurfheader = false;
-		while(headernames.hasMoreElements()){
-			String headername = headernames.nextElement();
-			String headerValue = wrapper.getHeader( headername);
-			if(headerValue.contains("Spring Surf"))
-				hasspringsurfheader = true;
-			sb.append( "\t\t  MODED..... Header:: [" ).append( headername ).append( "] : [" ).append( headerValue  ).append("]\n");
-		}	logger.info(sb.toString());
-
 	}
 
 	private String proprieterayUserIdValidationAndExtractionMethod(HttpServletRequest req, HttpServletResponse resp, String remoteUser) {
 		
-		GenericHTTPClient httpclient = null;
 		try {
-			httpclient = new GenericHTTPClient("http");
 			
+			if(remoteUser==null || remoteUser.isEmpty())
+				return null;
+			
+			final GenericHTTPClient httpclient = new GenericHTTPClient("http");
+			
+			try{
 			GenericHTTPParam params = new GenericHTTPParam();
 			Map<String,String> headers = new HashMap<String,String>();
 			String auth = "admin" + ":" + "";
@@ -150,19 +112,25 @@ public class SSOIntegrationFilter implements Filter {
 			
 			GenericHttpResp response = httpclient.call(params);
 			
-			System.out.println("\n\n encodedAuth = ["+basicauthhh+"]  RESP CODE:: "+response.getResp_code()
+			System.out.println("\n\n remoteUser["+remoteUser+"] encodedAuth = ["+basicauthhh+"]  RESP CODE:: "+response.getResp_code()
 			         +"\n\t\t RESP BODY:: "+response.getBody());
 			
-			if(response.getResp_code()==200)
+			if(response.getResp_code()==200 || response.getResp_code()==204)
 				return response.getBody();
 			return null;
+			}catch(Exception e){
+				throw e;
+			}finally{
+				try{
+					if(httpclient!=null)
+						httpclient.finalizeMe();
+				}catch(Exception e){}
+			}
+			
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 		}finally{
-			try{
-				if(httpclient!=null)
-					httpclient.finalizeMe();
-			}catch(Exception e){}
+			
 		}
 		
 		

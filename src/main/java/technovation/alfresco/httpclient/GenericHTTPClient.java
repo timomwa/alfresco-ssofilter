@@ -172,7 +172,7 @@ public class GenericHTTPClient implements Serializable{
 			
 			setBusy(false);
 			
-			String respose_msg  = convertStreamToString(response.getEntity().getContent());
+			String respose_msg  = response.getEntity()!=null ? convertStreamToString(response.getEntity().getContent()) : null;
 			respBuilder = respBuilder.body(respose_msg);
 			logger.debug(getName()+" PROXY ::::::: finished attempt to deliver SMS via HTTP :::: RESP::: "+respose_msg);
 			try {
