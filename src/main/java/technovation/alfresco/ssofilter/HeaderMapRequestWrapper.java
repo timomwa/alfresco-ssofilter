@@ -64,7 +64,7 @@ public class HeaderMapRequestWrapper extends HttpServletRequestWrapper {
     @Override 
     public String getRemoteUser() { 
     	String remoteUser = (String) getSession().getAttribute(SSOIntegrationFilter.SESS_PARAM_REMOTE_USER); 
-    	System.out.println(" \n\n\n\t\t 2.:: ....remoteUser-->"+remoteUser+"..in doFilter().....\n\n\n");
+    	System.out.println(" \n\n\n\t\t 3...:: ....remoteUser-->"+remoteUser+"..in doFilter().....\n\n\n");
     	return remoteUser;
     } 
 
