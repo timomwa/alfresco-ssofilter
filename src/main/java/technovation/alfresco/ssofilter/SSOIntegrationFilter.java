@@ -1,17 +1,7 @@
 package technovation.alfresco.ssofilter;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.Filter;
@@ -23,14 +13,9 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 

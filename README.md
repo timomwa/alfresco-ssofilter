@@ -1,7 +1,8 @@
 # alfresco-ssofilter
 Alfresco DMS's SSO filter
 
-
+# How to build
+1. mvn clean compiel package
 
 
 
