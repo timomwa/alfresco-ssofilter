@@ -21,6 +21,21 @@ Add these lines after other filter declarations;
 	    <url-pattern>*</url-pattern>
 	</filter-mapping>
 
+Edit  `$ALFRESCO_HOME/tomcat/webapps/share/WEB-INF/classes/alfresco/share-security-config.xml`
+Look for;
+
+		<header>
+		  <name>X-Frame-Options</name>
+		  <value>SAMEORIGIN</value>
+		</header>
+		
+And edit it to look like this
+
+		<header>
+		  <name>X-Frame-Options</name>
+		  <value>SAMEORIGIN</value>
+		  <enabled>false</enabled>
+		</header>
 	
 Save file. Restart alfresco; `$ALFRESCO_HOME/alfresco.sh restart`
 
