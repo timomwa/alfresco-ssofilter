@@ -2,7 +2,27 @@
 Alfresco DMS's SSO filter
 
 # How to build
-1. mvn clean compiel package
+1. mvn clean compile package
+
+
+#Installation
+1. copy the compiled jar - `./target/ssofilter.jar` to $ALFRESCO_HOME/tomcat/lib/
+2. Edit the `web.xml` located at  $ALFRESCO_HOME/tomcat/conf
+
+Add these lines after other filter declarations;
+
+	<filter>
+	    <filter-name>Demo Filter</filter-name>
+	    <filter-class>technovation.alfresco.ssofilter.SSOIntegrationFilter</filter-class>
+	</filter>
+	
+	<filter-mapping>
+	    <filter-name>Demo Filter</filter-name>
+	    <url-pattern>*</url-pattern>
+	</filter-mapping>
+
+	
+Save file. Restart alfresco; `$ALFRESCO_HOME/alfresco.sh restart`
 
 
 
