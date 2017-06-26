@@ -103,7 +103,7 @@ public class SSOIntegrationFilter implements Filter {
 			GenericHTTPParam params = new GenericHTTPParam();
 			Map<String,String> headers = new HashMap<String,String>();
 			String auth = "admin" + ":" + "";
-			String basicauthhh = "dGltb213YUBnbWFpbC5jb206QWRtaW4xMjMjQCE=";
+			String basicauthhh = "YWRtaW46";//"dGltb213YUBnbWFpbC5jb206QWRtaW4xMjMjQCE=";
 			headers.put("Authorization","Basic "+basicauthhh);//dGltb213YUBnbWFpbC5jb206QWRtaW4xMjMjQCE=");
 			params.setHeaderParams(headers);
 			params.setHttpmethod("GET");
