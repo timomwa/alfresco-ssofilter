@@ -36,6 +36,18 @@ And edit it to look like this
 		  <value>SAMEORIGIN</value>
 		  <enabled>false</enabled>
 		</header>
+
+
+Edit  `$ALFRESCO_HOME/tomcat/shared/classes/alfresco-global.properties` and add the lines below;
+
+	### External Authentication
+	
+	authentication.chain=external1:external,alfrescoNtlm1:alfrescoNtlm
+	external.authentication.proxyUserName=
+	external.authentication.enabled=true
+	external.authentication.defaultAdministratorUserNames=admin
+	external.authentication.proxyHeader=X-Alfresco-Remote-User
+
 	
 Save file. Restart alfresco; `$ALFRESCO_HOME/alfresco.sh restart`
 

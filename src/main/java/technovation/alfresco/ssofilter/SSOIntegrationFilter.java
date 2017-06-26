@@ -107,7 +107,7 @@ public class SSOIntegrationFilter implements Filter {
 			headers.put("Authorization","Basic "+basicauthhh);//dGltb213YUBnbWFpbC5jb206QWRtaW4xMjMjQCE=");
 			params.setHeaderParams(headers);
 			params.setHttpmethod("GET");
-			String url = "http://localhost:8080/eacimscore/seam/resource/restv1/sso/"+remoteUser;
+			String url = "http://212.22.169.19/eacimscore/seam/resource/restv1/sso/"+remoteUser;
 			System.out.println("URL--> ["+url+"]"); 
 			params.setUrl(url);
 			
