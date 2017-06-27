@@ -74,6 +74,10 @@ alf-hd
 alf-ft
 GUGAMUGA" style="display:none; width:0px;"
 
+For ..repository.ftl
+change line 28 to
+<div style="display:none; width:0px;">
+
 then
 
 $ALFRESCO_HOME/tomcat/webapps/share/WEB-INF/classes/alfresco/site-webscripts/org/alfresco/components/node-details/node-header.get.html.ftl
@@ -95,6 +99,11 @@ Change  line 196 from
 <div id="${id}-navBar" class="nav-bar flat-button theme-bg-2">
 to
 <div  style="display:none;width:0px">
+
+
+#Hide doctree
+https://community.alfresco.com/thread/209756-hide-menu-tree-menu
+
 
 
 #ref
